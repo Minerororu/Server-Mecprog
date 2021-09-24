@@ -1,5 +1,5 @@
 {
-  "scripts": {"start": "nodemon index.js"},
+  "scripts": {"start": "nodemon server.js"},
   "dependencies": {
     "nodemon": "^2.0.12",
     "puppeteer": "^10.4.0"
