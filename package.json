@@ -1,7 +1,13 @@
 {
-  "scripts": {"start": "nodemon server.js"},
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "dependencies": {
+    "express": "^4.17.1",
+    "firebase": "^9.0.2",
     "nodemon": "^2.0.12",
-    "puppeteer": "^10.4.0"
+    "puppeteer": "^10.4.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
   }
 }
