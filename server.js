@@ -5,6 +5,9 @@ const cookieJar = request.jar();
 request = request.defaults({jar: cookieJar})
 const browserObject = require('./browser');
 const scraperController = require('./pageController');
+const cors = require("cors");
+app.use(cors());
+const port = process.env.PORT || 8080;
 app.use(express.json());
 // Required for side-effects
 
