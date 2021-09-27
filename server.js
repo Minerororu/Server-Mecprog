@@ -24,7 +24,7 @@ async function main(equipamentos, hoje, ontem, user, senha){
 app.post("/", function(req, res) {
   equipamentosNomes.includes(req.body.equipamento)? '':(equipamentos.push(req.body), equipamentosNomes.push(req.body.equipamento));
   main(equipamentos, req.body.dataHoje, req.body.dataOntem, req.body.cliente.usuarioRastreamento, req.body.cliente.senhaRastreamento);
-  res.send('<div><h1>uuuuu me acahram</h1></div> <h1>ffgrgrg</h1> ');
+  console.log(req.body);
 });
 
 app.get("/", function(req, res) {
