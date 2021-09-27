@@ -7,7 +7,6 @@ const browserObject = require('./browser');
 const scraperController = require('./pageController');
 const cors = require("cors");
 app.use(cors());
-const port = process.env.PORT || 8080;
 app.use(express.json());
 const equipamentos = []
 const equipamentosNomes = []
@@ -33,6 +32,6 @@ app.get("/", function(req, res) {
 });
 
 
-app.listen(8080, () => {
+app.listen(8080, '0.0.0.0',() => {
   console.log('ta no 8080')
 });
