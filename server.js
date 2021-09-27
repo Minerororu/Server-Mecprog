@@ -9,20 +9,22 @@ const cors = require("cors");
 app.use(cors());
 const port = process.env.PORT || 8080;
 app.use(express.json());
+const equipamentos = []
+const equipamentosNomes = []
 // Required for side-effects
 
-async function main(nomeEquipamento, hoje, ontem){
+async function main(equipamentos, hoje, ontem, user, senha){
   //Start the browser and create a browser instance
   let browserInstance = browserObject.startBrowser();
   
   // Pass the browser instance to the scraper controller
-  await scraperController(browserInstance, nomeEquipamento, hoje, ontem);
+  await scraperController(browserInstance, equipamentos, hoje, ontem, user, senha);
 }
 
 
 app.post("/", function(req, res) {
-  console.log(req.body.equipamento);
-  main(req.body, req.body.dataHoje, req.body.dataOntem);
+  equipamentosNomes.includes(req.body.equipamento)? '':(equipamentos.push(req.body), equipamentosNomes.push(req.body.equipamento));
+  main(equipamentos, req.body.dataHoje, req.body.dataOntem, req.body.cliente.usuarioRastreamento, req.body.cliente.senhaRastreamento);
   res.send('<div><h1>uuuuu me acahram</h1></div> <h1>ffgrgrg</h1> ');
 });
 

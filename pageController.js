@@ -1,9 +1,9 @@
 const pageScraper = require('./pageScrapper');
-async function scrapeAll(browserInstance, nomeEquipamento, hoje, ontem){
+async function scrapeAll(browserInstance, nomeEquipamento, hoje, ontem, user, senha){
     let browser;
     try{
         browser = await browserInstance;
-        await pageScraper.scraperHomePage(browser, nomeEquipamento, hoje, ontem);
+        await pageScraper.scraperHomePage(browser, nomeEquipamento, hoje, ontem, user, senha);
     }
     
     catch(err){
@@ -11,4 +11,4 @@ async function scrapeAll(browserInstance, nomeEquipamento, hoje, ontem){
     }
 }
 
-module.exports = (browserInstance, nomeEquipamento, hoje, ontem) => scrapeAll(browserInstance, nomeEquipamento, hoje, ontem)
+module.exports = (browserInstance, nomeEquipamento, hoje, ontem, user, senha) => scrapeAll(browserInstance, nomeEquipamento, hoje, ontem, user, senha)
