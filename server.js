@@ -32,6 +32,6 @@ app.get("/", function(req, res) {
 });
 
 
-app.listen(80, '0.0.0.0',() => {
+app.listen(80, () => {
   console.log('ta no 80')
 });
