@@ -14,7 +14,11 @@ const equipamentosNomes = []
 // Required for side-effects
 
 async function main(equipamentos, hoje, ontem, user, senha){
-  let browserInstance = puppeteer.launch({headless: false, args: ['--no-sandbox', '--disable-setuid-sandbox']})
+  let browserInstance = puppeteer.launch({
+    executablePath: '/usr/bin/google-chrome-stable',
+    headless: false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  })
 
   // Pass the browser instance to the scraper controller
   console.log('req.body');
