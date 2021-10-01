@@ -18,14 +18,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const scraperObject = {
-  urlHome: 'http://www17.itrack.com.br/mecprog/controlemonitoramento',
+  urlHome: 'http://www16.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
   scrapeRelatorio: async (browser, equipamentos, hoje, ontem) => {
     for(let j = 0; j < equipamentos.length; j++){
       nomeEquipamento = equipamentos[j].equipamento;
       // console.log(nomeEquipamento + ' equipamento');
       let equipamentoID = equipamentos.indexOf(equipamentos[j]) + 1 + '';
-      let urlRelatorio = `http://www17.itrack.com.br/mecprog/controlerelatoriopontopercurso?VEIID=${equipamentoID}&tipoConsulta=5&dtI=${
+      let urlRelatorio = `http://www16.itrack.com.br/mecprog/controlerelatoriopontopercurso?VEIID=${equipamentoID}&tipoConsulta=5&dtI=${
         ontem.charAt(0) + ontem.charAt(1)
       }%2F${ontem.charAt(3) + ontem.charAt(4)}%2F${
         ontem.charAt(6) + ontem.charAt(7) + ontem.charAt(8) + ontem.charAt(9)
@@ -94,7 +94,7 @@ const scraperObject = {
       //  console.log(totalHoras);
       //console.log(horarioTotal);
       if(totalHoras != 0 && totalMinutos != 0){
-        //await salvarApontamentoUso(equipamentos[j], horarioTotal);
+        await salvarApontamentoUso(equipamentos[j], horarioTotal);
       }
       await browser.close()
     }
@@ -105,13 +105,18 @@ const scraperObject = {
     await equipamentosPar.map(equipamento => {
       equipamentosParString.push(equipamento.equipamento)
     })
+    const context = await browser.createIncognitoBrowserContext();
     let page = await browser.newPage();
     console.log(`Navigating to ${this.urlHome}...`);
+    // await page.deleteCookie({
+    //   name : "JSESSIONID",
+    //   domain : "http://www17.itrack.com.br/"
+    // })
     await page.goto(this.urlHome);
     console.log(await page.cookies())
     await page.deleteCookie({
       name : "JSESSIONID",
-      domain : "http://www17.itrack.com.br/mecprog/controlemonitoramento"
+      domain : "http://www17.itrack.com.br/"
     })
     await page.type('[name="usuario"]', user);
     await page.type('[name="senha"]', senha);

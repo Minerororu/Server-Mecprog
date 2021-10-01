@@ -34,7 +34,7 @@ app.post("/", function(req, res) {
     setInterval(() => {
       console.log('w')
       main(equipamentos, req.body.dataHoje, req.body.dataOntem, req.body.cliente.usuarioRastreamento, req.body.cliente.senhaRastreamento);
-    }, (60*1000));
+    }, (24*60*60*1000));
   };
   interval()
 });
