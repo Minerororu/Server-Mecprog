@@ -1,6 +1,6 @@
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, getDocs, addDoc } = require('firebase/firestore/lite');
-const server = require('./server')
+const server = require('./server');
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
@@ -22,83 +22,80 @@ const scraperObject = {
   urlHome: 'http://www16.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
   scrapeRelatorio: async (browser, equipamento, hoje, ontem, equipamentoIndex) => {
-      nomeEquipamento = equipamento.equipamento;
-      // console.log(nomeEquipamento + ' equipamento');
-      let urlRelatorio = `http://www16.itrack.com.br/mecprog/controlerelatoriopontopercurso?VEIID=${equipamentoIndex}&tipoConsulta=5&dtI=${
-        ontem.charAt(0) + ontem.charAt(1)
-      }%2F${ontem.charAt(3) + ontem.charAt(4)}%2F${
-        ontem.charAt(6) + ontem.charAt(7) + ontem.charAt(8) + ontem.charAt(9)
-      }&dtF=${hoje.charAt(0) + hoje.charAt(1)}%2F${hoje.charAt(3) + hoje.charAt(4)}%2F${
-        hoje.charAt(6) + hoje.charAt(7) + hoje.charAt(8) + hoje.charAt(9)
-      }`;
-      
-      let page = await browser.newPage();
-      console.log(`Navigating to ${urlRelatorio}...`);
-      await page.goto(urlRelatorio);
-      tds = await page.evaluate(() => {
-        let today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
-        
-        let hoje = dd + '/' + mm + '/' + yyyy;
-        let tdsArr = [];
-        let tds = Array.from(document.querySelectorAll('.small'));
-        let dadoDeOntem;
-        for (let i = 0; i + 1 < tds.length; i++) {
-          if ((i + 1) % 3 == 2) {
-            let texto = tds[i].innerText;
-            if (texto.charAt(0) + texto.charAt(1) == hoje.charAt(0) + hoje.charAt(1)) {
-              dadoDeOntem = false;
-            } else {
-              dadoDeOntem = true;
-            }
-          }
-          if ((i + 1) % 3 == 0 && dadoDeOntem) {
-            let texto = tds[i].innerText;
-            if (texto.charAt(1) != 'h') {
-              if (texto.charAt(4) != 'm') {
-                minutos = parseInt(texto.charAt(3) + texto.charAt(4));
-              } else {
-                minutos = parseInt(texto.charAt(3));
-              }
-              horas = parseInt(texto.charAt(0) + texto.charAt(1));
-            } else {
-              if (texto.charAt(4) != 'm') {
-                minutos = parseInt(texto.charAt(3) + texto.charAt(4));
-              } else {
-                minutos = parseInt(texto.charAt(3));
-              }
-              horas = parseInt(texto.charAt(0));
-            }
-            tdsArr.push(horas);
-            tdsArr.push(minutos);
+    nomeEquipamento = equipamento.equipamento;
+    let urlRelatorio = `http://www16.itrack.com.br/mecprog/controlerelatoriopontopercurso?VEIID=${equipamentoIndex}&tipoConsulta=5&dtI=${
+      ontem.charAt(0) + ontem.charAt(1)
+    }%2F${ontem.charAt(3) + ontem.charAt(4)}%2F${
+      ontem.charAt(6) + ontem.charAt(7) + ontem.charAt(8) + ontem.charAt(9)
+    }&dtF=${hoje.charAt(0) + hoje.charAt(1)}%2F${hoje.charAt(3) + hoje.charAt(4)}%2F${
+      hoje.charAt(6) + hoje.charAt(7) + hoje.charAt(8) + hoje.charAt(9)
+    }`;
+
+    let page = await browser.newPage();
+    console.log(`Navigating to ${urlRelatorio}...`);
+    await page.goto(urlRelatorio);
+    tds = await page.evaluate(() => {
+      let today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      var yyyy = today.getFullYear();
+
+      let hoje = dd + '/' + mm + '/' + yyyy;
+      let tdsArr = [];
+      let tds = Array.from(document.querySelectorAll('.small'));
+      let dadoDeOntem;
+      for (let i = 0; i + 1 < tds.length; i++) {
+        if ((i + 1) % 3 == 2) {
+          let texto = tds[i].innerText;
+          if (texto.charAt(0) + texto.charAt(1) == hoje.charAt(0) + hoje.charAt(1)) {
+            dadoDeOntem = false;
+          } else {
+            dadoDeOntem = true;
           }
         }
-        return tdsArr;
-      });
-      totalHoras = 0;
-      totalMinutos = 0;
-      somaMinutos = 0;
-      for (let i = 0; i < tds.length; i++) {
-        if ((i + 1) % 2 == 1) {
-          totalHoras += tds[i];
-        } else {
-          somaMinutos += tds[i];
-          totalHoras += parseInt(somaMinutos / 60);
-          totalMinutos += somaMinutos % 60;
+        if ((i + 1) % 3 == 0 && dadoDeOntem) {
+          let texto = tds[i].innerText;
+          if (texto.charAt(1) != 'h') {
+            if (texto.charAt(4) != 'm') {
+              minutos = parseInt(texto.charAt(3) + texto.charAt(4));
+            } else {
+              minutos = parseInt(texto.charAt(3));
+            }
+            horas = parseInt(texto.charAt(0) + texto.charAt(1));
+          } else {
+            if (texto.charAt(4) != 'm') {
+              minutos = parseInt(texto.charAt(3) + texto.charAt(4));
+            } else {
+              minutos = parseInt(texto.charAt(3));
+            }
+            horas = parseInt(texto.charAt(0));
+          }
+          tdsArr.push(horas);
+          tdsArr.push(minutos);
         }
       }
-      horarioTotal = await totalHoras + (totalMinutos / 100);
-      //  console.log(totalHoras);
-      //console.log(horarioTotal);
-      if(totalHoras != 0 && totalMinutos != 0){
-        await salvarApontamentoUso(equipamento, horarioTotal);
+      return tdsArr;
+    });
+    totalHoras = 0;
+    totalMinutos = 0;
+    somaMinutos = 0;
+    for (let i = 0; i < tds.length; i++) {
+      if ((i + 1) % 2 == 1) {
+        totalHoras += tds[i];
+      } else {
+        somaMinutos += tds[i];
+        totalHoras += parseInt(somaMinutos / 60);
+        totalMinutos += somaMinutos % 60;
       }
-      await browser.close()
+    }
+    horarioTotal = (await totalHoras) + totalMinutos / 100;
+    if (totalHoras != 0 && totalMinutos != 0) {
+      await salvarApontamentoUso(equipamento, horarioTotal);
+    };
+    await browser.close();
   },
 
-  async scraperHomePage(browser, equipamento, hoje, ontem, index){
+  async scraperHomePage(browser, equipamento, hoje, ontem, index) {
     const context = await browser.createIncognitoBrowserContext();
     let page = await browser.newPage();
     console.log(`Navigating to ${this.urlHome}...`);
@@ -107,18 +104,16 @@ const scraperObject = {
     //   domain : "http://www17.itrack.com.br/"
     // })
     await page.goto(this.urlHome);
-    //console.log(await page.cookies())
     await page.deleteCookie({
-      name : "JSESSIONID",
-      domain : "http://www17.itrack.com.br/"
-    })
+      name: 'JSESSIONID',
+      domain: 'http://www17.itrack.com.br/',
+    });
     await page.type('[name="usuario"]', equipamento.cliente.usuarioRastreamento);
     await page.type('[name="senha"]', equipamento.cliente.senhaRastreamento);
     await page.click('.btn');
-    try{
-      await page.waitForSelector('.trLink')
-    }
-    catch(err) {
+    try {
+      await page.waitForSelector('.trLink');
+    } catch (err) {
       browser.close();
       server.main(hoje, ontem, true, index);
     }
@@ -131,14 +126,17 @@ const scraperObject = {
       return equipamentosArr;
     });
 
-    // console.log(equipamentos)
-
-    await this.scrapeRelatorio(browser, equipamento, hoje, ontem, (equipamentosNomes.indexOf(equipamento.equipamento)+1));
+    await this.scrapeRelatorio(
+      browser,
+      equipamento,
+      hoje,
+      ontem,
+      equipamentosNomes.indexOf(equipamento.equipamento) + 1
+    );
   },
 };
 
 async function salvarApontamentoUso(equipamento, valor) {
-  console.log('chamou salvar')
   // Get a list of cities from your database
 
   // TODO: Replace the following with your app's Firebase project configuration

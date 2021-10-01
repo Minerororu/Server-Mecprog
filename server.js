@@ -1,54 +1,66 @@
 const express = require('express');
-const app = express()
-let request = require("request-promise")
+const app = express();
+let request = require('request-promise');
 const cookieJar = request.jar();
-request = request.defaults({jar: cookieJar})
+request = request.defaults({ jar: cookieJar });
 const browserObject = require('./browser');
 const scraperController = require('./pageController');
-const puppeteer = require('puppeteer')
-const cors = require("cors");
+const puppeteer = require('puppeteer');
+const cors = require('cors');
 app.use(cors());
 app.use(express.json());
-const equipamentos = []
-const equipamentosNomes = []
+const equipamentos = [];
+const equipamentosNomes = [];
 // Required for side-effects
 
-async function main(hoje, ontem, erro, index){
+async function main(hoje, ontem, erro, index) {
   let browserInstance = puppeteer.launch({
-    executablePath: '/usr/bin/google-chrome-stable',
+    //executablePath: '/usr/bin/google-chrome-stable',
     headless: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  })
+  });
   //if(equipamentos.contains(equipamento.equipamento))
   // Pass the browser instance to the scraper controller
   await scraperController(browserInstance, equipamentos[index], hoje, ontem, index);
 }
 
-
 let intervalTimer = '';
-app.post("/", function(req, res) {
-  equipamentosNomes.includes(req.body.equipamento)?
-  '':(equipamentos.push(req.body), equipamentosNomes.push(req.body.equipamento));
-  const loop = async () => {
-    for(let i = 0; i < equipamentos.length; i++){
-      await main(req.body.dataHoje, req.body.dataOntem, false, i);
+app.post('/', function (req, res) {
+  let loopavel = true;
+  console.log(req.body)
+  req.body.forEach((element, index) => {
+    if(index < req.body.length -1){
+      if (!equipamentosNomes.includes(element.equipamento)) {
+        equipamentos.push(element);
+        equipamentosNomes.push(element.equipamento);
+        loopavel = true;
+      }else{
+        loopavel = false;
+      }
     }
-  }
-  console.log('linha 33')
-  loop()
+  });
+
+  const loop = async () => {
+    for (let i = 0; i < equipamentos.length; i++) {
+      if(loopavel){
+        await main(req.body[req.body.length-1].dataHoje, req.body[req.body.length-1].dataOntem, false, i);
+      }
+    }
+  };
+  
+  loop();
   clearInterval(intervalTimer);
 
   intervalTimer = setInterval(() => {
-      console.log('w')
-     loop();
-    }, (60*1000));
+    loop();
+  }, 24 * 60 * 60 * 1000);
 });
 
-app.get("/", function(req, res) {
+app.get('/', function (req, res) {
   res.send('teste');
 });
 
-module.exports.main = main
+module.exports.main = main;
 app.listen(80, () => {
-  console.log('ta no 80')
+  console.log('ta no 80');
 });
