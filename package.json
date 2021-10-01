@@ -10,6 +10,7 @@
     "firebase-admin": "^9.11.1",
     "nodemon": "^2.0.12",
     "puppeteer": "^10.4.0",
+    "puppeteer-core": "^10.4.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"
   }

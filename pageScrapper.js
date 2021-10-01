@@ -21,10 +21,9 @@ const scraperObject = {
   urlHome: 'http://www17.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
   scrapeRelatorio: async (browser, equipamentos, hoje, ontem) => {
-    console.log(equipamentos.length)
     for(let j = 0; j < equipamentos.length; j++){
       nomeEquipamento = equipamentos[j].equipamento;
-      console.log(nomeEquipamento + ' equipamento');
+      // console.log(nomeEquipamento + ' equipamento');
       let equipamentoID = equipamentos.indexOf(equipamentos[j]) + 1 + '';
       let urlRelatorio = `http://www17.itrack.com.br/mecprog/controlerelatoriopontopercurso?VEIID=${equipamentoID}&tipoConsulta=5&dtI=${
         ontem.charAt(0) + ontem.charAt(1)
@@ -79,7 +78,6 @@ const scraperObject = {
         }
         return tdsArr;
       });
-      console.log(tds);
       totalHoras = 0;
       totalMinutos = 0;
       somaMinutos = 0;
@@ -93,11 +91,11 @@ const scraperObject = {
         }
       }
       horarioTotal = await totalHoras + (totalMinutos / 100);
-      await console.log(totalHoras);
-      console.log(horarioTotal);
+      //  console.log(totalHoras);
+      //console.log(horarioTotal);
       if(totalHoras != 0 && totalMinutos != 0){
+        //await salvarApontamentoUso(equipamentos[j], horarioTotal);
       }
-      await salvarApontamentoUso(equipamentos[j], horarioTotal);
       await browser.close()
     }
   },
@@ -110,6 +108,7 @@ const scraperObject = {
     let page = await browser.newPage();
     console.log(`Navigating to ${this.urlHome}...`);
     await page.goto(this.urlHome);
+    console.log(await page.cookies())
     await page.type('[name="usuario"]', user);
     await page.type('[name="senha"]', senha);
     await page.click('.btn');
@@ -122,18 +121,13 @@ const scraperObject = {
       }
       return equipamentosArr;
     });
-    const equipamentosFiltrados = await [];
+    const equipamentosFiltrados = [];
     await equipamentosPar.map(equipamento => {
       equipamentosParString.includes(equipamento.equipamento)? equipamentosFiltrados.push(equipamento):'';
     })
-    await console.log(equipamentos)
+    // console.log(equipamentos)
 
     await this.scrapeRelatorio(browser, equipamentosFiltrados, hoje, ontem);
-    await console.log(2)
-    await setInterval(() => {
-      console.log('fu')
-      this.scraperHomePage(browser, equipamentosPar, hoje, ontem, user, senha)    
-    }, (24*60*60*1000))
   },
 };
 
@@ -162,7 +156,6 @@ async function salvarApontamentoUso(equipamento, valor) {
   } catch (e) {
     console.error('Error adding document: ', e);
   }
-  console.log(1)
 }
 
 module.exports = scraperObject;
