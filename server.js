@@ -13,37 +13,42 @@ const equipamentos = []
 const equipamentosNomes = []
 // Required for side-effects
 
-async function main(equipamentos, hoje, ontem, user, senha){
+async function main(hoje, ontem, erro, index){
   let browserInstance = puppeteer.launch({
     executablePath: '/usr/bin/google-chrome-stable',
     headless: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   })
-
+  //if(equipamentos.contains(equipamento.equipamento))
   // Pass the browser instance to the scraper controller
-  console.log('req.body');
-  await scraperController(browserInstance, equipamentos, hoje, ontem, user, senha);
+  await scraperController(browserInstance, equipamentos[index], hoje, ontem, index);
 }
 
 
+let intervalTimer = '';
 app.post("/", function(req, res) {
-  equipamentosNomes.includes(req.body.equipamento)? '':(equipamentos.push(req.body), equipamentosNomes.push(req.body.equipamento));
-  const interval = async () => {
-    main(equipamentos, req.body.dataHoje, req.body.dataOntem, req.body.cliente.usuarioRastreamento, req.body.cliente.senhaRastreamento);
+  equipamentosNomes.includes(req.body.equipamento)?
+  '':(equipamentos.push(req.body), equipamentosNomes.push(req.body.equipamento));
+  const loop = async () => {
+    for(let i = 0; i < equipamentos.length; i++){
+      await main(req.body.dataHoje, req.body.dataOntem, false, i);
+    }
+  }
+  console.log('linha 33')
+  loop()
+  clearInterval(intervalTimer);
 
-    setInterval(() => {
+  intervalTimer = setInterval(() => {
       console.log('w')
-      main(equipamentos, req.body.dataHoje, req.body.dataOntem, req.body.cliente.usuarioRastreamento, req.body.cliente.senhaRastreamento);
-    }, (24*60*60*1000));
-  };
-  interval()
+     loop();
+    }, (60*1000));
 });
 
 app.get("/", function(req, res) {
   res.send('teste');
 });
 
-
+module.exports.main = main
 app.listen(80, () => {
   console.log('ta no 80')
 });
