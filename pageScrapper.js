@@ -109,6 +109,10 @@ const scraperObject = {
     console.log(`Navigating to ${this.urlHome}...`);
     await page.goto(this.urlHome);
     console.log(await page.cookies())
+    await page.deleteCookie({
+      name : "JSESSIONID",
+      domain : "http://www17.itrack.com.br/mecprog/controlemonitoramento"
+    })
     await page.type('[name="usuario"]', user);
     await page.type('[name="senha"]', senha);
     await page.click('.btn');
