@@ -61,9 +61,6 @@ app.get('/', function (req, res) {
 });
 
 module.exports.main = main;
-app.listen(80, () => {
-  console.log('ta no 80');
-});
 
 app.listen(443, () => {
   console.log('ta no 443');
