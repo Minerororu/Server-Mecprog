@@ -28,7 +28,7 @@ let intervalTimer = '';
 app.post('/', function (req, res) {
   let loopavel = true;
   console.log(req.body)
-  req.body.forEach((element, index) => {
+  req.body.map((element, index) => {
     if(index < req.body.length -1){
       if (!equipamentosNomes.includes(element.equipamento)) {
         equipamentos.push(element);

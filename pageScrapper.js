@@ -35,6 +35,7 @@ const scraperObject = {
     console.log(`Navigating to ${urlRelatorio}...`);
     await page.goto(urlRelatorio);
     tds = await page.evaluate(() => {
+      console.log('a')
       let today = new Date();
       var dd = String(today.getDate()).padStart(2, '0');
       var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -44,7 +45,9 @@ const scraperObject = {
       let tdsArr = [];
       let tds = Array.from(document.querySelectorAll('.small'));
       let dadoDeOntem;
+      console.log(tds);
       for (let i = 0; i + 1 < tds.length; i++) {
+        console.log(dadoDeOntem)
         if ((i + 1) % 3 == 2) {
           let texto = tds[i].innerText;
           if (texto.charAt(0) + texto.charAt(1) == hoje.charAt(0) + hoje.charAt(1)) {
@@ -53,13 +56,17 @@ const scraperObject = {
             dadoDeOntem = true;
           }
         }
+        
         if ((i + 1) % 3 == 0 && dadoDeOntem) {
           let texto = tds[i].innerText;
+          console.log(texto)
           if (texto.charAt(1) != 'h') {
             if (texto.charAt(4) != 'm') {
               minutos = parseInt(texto.charAt(3) + texto.charAt(4));
+              console.log(minutos)
             } else {
               minutos = parseInt(texto.charAt(3));
+              console.log(minutos)
             }
             horas = parseInt(texto.charAt(0) + texto.charAt(1));
           } else {
@@ -77,20 +84,20 @@ const scraperObject = {
       return tdsArr;
     });
     totalHoras = 0;
-    totalMinutos = 0;
     somaMinutos = 0;
+    console.log(tds)
     for (let i = 0; i < tds.length; i++) {
       if ((i + 1) % 2 == 1) {
         totalHoras += tds[i];
       } else {
-        somaMinutos += tds[i];
-        totalHoras += parseInt(somaMinutos / 60);
-        totalMinutos += somaMinutos % 60;
+        somaMinutos = parseInt(tds[i] * 1.667);
       }
     }
-    horarioTotal = (await totalHoras) + totalMinutos / 100;
-    if (totalHoras != 0 && totalMinutos != 0) {
-      await salvarApontamentoUso(equipamento, horarioTotal);
+    horarioTotal = ((await totalHoras) + somaMinutos / 100) + equipamento?.valorUltimoApontamento;
+    console.log(totalHoras)
+    console.log(somaMinutos)
+    if (horarioTotal != 0) {
+      await salvarApontamentoUso(equipamento, horarioTotal, hoje);
     };
     await browser.close();
   },
@@ -136,16 +143,17 @@ const scraperObject = {
   },
 };
 
-async function salvarApontamentoUso(equipamento, valor) {
+async function salvarApontamentoUso(equipamento, valor, dataHoje) {
   // Get a list of cities from your database
 
   // TODO: Replace the following with your app's Firebase project configuration
   try {
-    const docRef = await addDoc(collection(db, 'apontamentos'), {
+    apontamentoObj = {
       cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-      dataLeitura: equipamento.dataHoje,
+      dataLeitura: dataHoje,
       equipamento: {
         cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
+        uid: equipamento.cliente.uid,
         equipamento: equipamento.equipamento,
         id: equipamento.id,
         modelo: equipamento.modelo,
@@ -153,11 +161,15 @@ async function salvarApontamentoUso(equipamento, valor) {
         uid: equipamento.uid,
       },
       observacoes: '',
-      uid: equipamento.uid,
+      uid: equipamento.cliente.uid,
       unidadeMedida: 'HORAS',
       valorReal: valor,
-    });
-    console.log('Document written with ID: ', docRef.id);
+    }
+    const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
+    equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
+    const docRefEquipamento = await addDoc(collection(db, 'equipamentos'), equipamento);
+    console.log('Document written with ID:' + docRefApontamento.id);
+    console.log('Document written with ID:' + docRefEquipamento.id);
   } catch (e) {
     console.error('Error adding document: ', e);
   }
