@@ -1,5 +1,12 @@
 const express = require('express');
 const app = express();
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 let request = require('request-promise');
 const cookieJar = request.jar();
 request = request.defaults({ jar: cookieJar });
@@ -62,6 +69,8 @@ app.get('/', function (req, res) {
 
 module.exports.main = main;
 
-app.listen(443, () => {
-  console.log('ta no 443');
-});
+https.createServer(options, function(req, res) {
+    console.log('ta no 443')
+    res.end("hello world\n");
+    res.writeHead(200);
+}).listen(443);
