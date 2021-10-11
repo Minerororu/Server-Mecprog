@@ -1,5 +1,5 @@
 const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, getDocs, addDoc } = require('firebase/firestore/lite');
+const { getFirestore, collection, getDocs, addDoc, setDoc } = require('firebase/firestore/lite');
 const server = require('./server');
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
@@ -168,12 +168,11 @@ async function salvarApontamentoUso(equipamento, valor, dataHoje) {
       valorReal: valor,
     }
     const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
-    equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
-    equipamento.id = apontamentoObj.equipamento.id
-    console.log(equipamento.id)
-    const docRefEquipamento = await addDoc(collection(db, 'equipamentos'), equipamento);
     console.log('Apontamento written with ID:' + docRefApontamento.id);
-    console.log('Equipamento written with ID:' + docRefEquipamento.id);
+    console.log(equipamento.id + ' equipamento id');
+    equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
+    await setDoc(doc(db, "cities", equipamento.id), equipamento);
+    console.log('equipamento salvou')
   } catch (e) {
     console.error('Error adding document: ', e);
   }
