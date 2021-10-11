@@ -103,6 +103,7 @@ const scraperObject = {
   },
 
   async scraperHomePage(browser, equipamento, hoje, ontem, index) {
+    console.log('scraperHomePage')
     const context = await browser.createIncognitoBrowserContext();
     let page = await browser.newPage();
     console.log(`Navigating to ${this.urlHome}...`);
@@ -140,6 +141,7 @@ const scraperObject = {
       ontem,
       equipamentosNomes.indexOf(equipamento.equipamento) + 1
     );
+    return ''
   },
 };
 
@@ -167,9 +169,11 @@ async function salvarApontamentoUso(equipamento, valor, dataHoje) {
     }
     const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
     equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
+    equipamento.id = apontamentoObj.equipamento.id
+    console.log(equipamento.id)
     const docRefEquipamento = await addDoc(collection(db, 'equipamentos'), equipamento);
-    console.log('Document written with ID:' + docRefApontamento.id);
-    console.log('Document written with ID:' + docRefEquipamento.id);
+    console.log('Apontamento written with ID:' + docRefApontamento.id);
+    console.log('Equipamento written with ID:' + docRefEquipamento.id);
   } catch (e) {
     console.error('Error adding document: ', e);
   }
