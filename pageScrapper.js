@@ -1,5 +1,5 @@
 const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, getDocs, addDoc, setDoc } = require('firebase/firestore/lite');
+const { getFirestore, collection, getDocs, addDoc, setDoc, doc } = require('firebase/firestore/lite');
 const server = require('./server');
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
@@ -21,7 +21,14 @@ const db = getFirestore(app);
 const scraperObject = {
   urlHome: 'http://www16.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
-  scrapeRelatorio: async (browser, equipamento, hoje, ontem, equipamentoIndex) => {
+  scrapeRelatorio: async (browser, equipamento, equipamentoIndex) => {
+    let today = new Date()
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0')
+    let yyyy = today.getFullYear();
+    let hoje = dd +'/' +mm + '/' + yyyy;
+    let ontem = parseInt(dd) - 1 +'/' +mm + '/' + yyyy;
+
     nomeEquipamento = equipamento.equipamento;
     let urlRelatorio = `http://www16.itrack.com.br/mecprog/controlerelatoriopontopercurso?VEIID=${equipamentoIndex}&tipoConsulta=5&dtI=${
       ontem.charAt(0) + ontem.charAt(1)
@@ -35,7 +42,6 @@ const scraperObject = {
     console.log(`Navigating to ${urlRelatorio}...`);
     await page.goto(urlRelatorio);
     tds = await page.evaluate(() => {
-      console.log('a')
       let today = new Date();
       var dd = String(today.getDate()).padStart(2, '0');
       var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -45,9 +51,7 @@ const scraperObject = {
       let tdsArr = [];
       let tds = Array.from(document.querySelectorAll('.small'));
       let dadoDeOntem;
-      console.log(tds);
       for (let i = 0; i + 1 < tds.length; i++) {
-        console.log(dadoDeOntem)
         if ((i + 1) % 3 == 2) {
           let texto = tds[i].innerText;
           if (texto.charAt(0) + texto.charAt(1) == hoje.charAt(0) + hoje.charAt(1)) {
@@ -59,14 +63,11 @@ const scraperObject = {
         
         if ((i + 1) % 3 == 0 && dadoDeOntem) {
           let texto = tds[i].innerText;
-          console.log(texto)
           if (texto.charAt(1) != 'h') {
             if (texto.charAt(4) != 'm') {
               minutos = parseInt(texto.charAt(3) + texto.charAt(4));
-              console.log(minutos)
             } else {
               minutos = parseInt(texto.charAt(3));
-              console.log(minutos)
             }
             horas = parseInt(texto.charAt(0) + texto.charAt(1));
           } else {
@@ -85,25 +86,24 @@ const scraperObject = {
     });
     totalHoras = 0;
     somaMinutos = 0;
-    console.log(tds)
     for (let i = 0; i < tds.length; i++) {
       if ((i + 1) % 2 == 1) {
         totalHoras += tds[i];
       } else {
+        console.log(tds)
         somaMinutos = parseInt(tds[i] * 1.667);
       }
     }
+    console.log(somaMinutos + ' somaMinutos')
     horarioTotal = ((await totalHoras) + somaMinutos / 100) + equipamento?.valorUltimoApontamento;
-    console.log(totalHoras)
-    console.log(somaMinutos)
-    if (horarioTotal != 0) {
-      await salvarApontamentoUso(equipamento, horarioTotal, hoje);
+
+    if (horarioTotal - equipamento?.valorUltimoApontamento != 0) {
+       await salvarApontamentoUso(equipamento, horarioTotal, hoje);
     };
-    await browser.close();
+    browser.close()
   },
 
-  async scraperHomePage(browser, equipamento, hoje, ontem, index) {
-    console.log('scraperHomePage')
+  async scraperHomePage(browser, equipamento, index) {
     const context = await browser.createIncognitoBrowserContext();
     let page = await browser.newPage();
     console.log(`Navigating to ${this.urlHome}...`);
@@ -123,7 +123,7 @@ const scraperObject = {
       await page.waitForSelector('.trLink');
     } catch (err) {
       browser.close();
-      server.main(hoje, ontem, true, index);
+      server.main(index);
     }
     equipamentosNomes = await page.evaluate(() => {
       let equipamentosArr = [];
@@ -133,12 +133,10 @@ const scraperObject = {
       }
       return equipamentosArr;
     });
-
+  
     await this.scrapeRelatorio(
       browser,
       equipamento,
-      hoje,
-      ontem,
       equipamentosNomes.indexOf(equipamento.equipamento) + 1
     );
     return ''
@@ -150,29 +148,31 @@ async function salvarApontamentoUso(equipamento, valor, dataHoje) {
 
   // TODO: Replace the following with your app's Firebase project configuration
   try {
+    console.log(equipamento.uid + ' uid')
+    console.log(valor +' valor')
     apontamentoObj = {
       cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
       dataLeitura: dataHoje,
       equipamento: {
         cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-        uid: equipamento.cliente.uid,
+        uid: equipamento.uid,
         equipamento: equipamento.equipamento,
         id: equipamento.id,
         modelo: equipamento.modelo,
         tipoEquipamento: JSON.parse(JSON.stringify(equipamento.tipoEquipamento)),
-        uid: equipamento.uid,
       },
       observacoes: '',
-      uid: equipamento.cliente.uid,
+      uid: equipamento.uid,
       unidadeMedida: 'HORAS',
       valorReal: valor,
+      geradoPor: 'Automaticamente'
     }
+    console.log(apontamentoObj.uid)
     const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
     console.log('Apontamento written with ID:' + docRefApontamento.id);
-    console.log(equipamento.id + ' equipamento id');
     equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
-    await setDoc(doc(db, "cities", equipamento.id), equipamento);
-    console.log('equipamento salvou')
+    await setDoc(doc(db, "equipamentos", equipamento.id), equipamento);
+    console.log(equipamento.id + ' equipamento id');
   } catch (e) {
     console.error('Error adding document: ', e);
   }
