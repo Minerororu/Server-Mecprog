@@ -59,7 +59,7 @@ app.post('/', function (req, res) {
       documentos.splice(index, 1, req.body)
     }
     console.log(documentos)
-  } else{
+  } else if(req.body.assunto){
     console.log(req.body)
     mandarEmail(req.body['assunto'], req.body['email'], req.body['corpo']);
   }
