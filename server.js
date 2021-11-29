@@ -47,9 +47,11 @@ app.post('/', function (req, res) {
       }
     }
   };
-  req.body.length ? mapBody(): '';
+  if(req.body.length){
+    mapBody();
+  } 
 
-  if(req.body['documento']){
+  else if(req.body.documento){
     if(documentos.filter(e => e.id === req.body.id).length == 0 && documentos.filter(e => JSON.parse(JSON.stringify(e)) === JSON.parse(JSON.stringify(req.body))).length == 0){
       documentos.push(req.body);
     } else {
