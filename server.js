@@ -114,6 +114,6 @@ app.get('/', function (req, res) {
 
 module.exports.main = main;
 
-app.listen(8080, () => {
+app.listen(process.env.PORT || 8080, () => {
   console.log('Ta aberto no 8080')
 });
