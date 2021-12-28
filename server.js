@@ -4,7 +4,6 @@ const app = express();
 let request = require('request-promise');
 const cookieJar = request.jar();
 request = request.defaults({ jar: cookieJar });
-const browserObject = require('./browser');
 const scraperController = require('./pageController');
 const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer')
