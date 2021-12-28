@@ -99,12 +99,12 @@ function mandarEmail(assunto, destinatario, corpo, anexo = null){
      to: destinatario,
      subject: assunto,
      text: corpo,
-     attachments: [
+     attachments: anexo ?  [
       {
           filename: "OrdemDeServico.pdf",
-          content: anexo.output('arraybuffer')
+          content: anexo?.output('arraybuffer')
       }
-   ]
+   ] : '',
    };
    transporter.sendMail(email, (error, info) => {
      if(error){
