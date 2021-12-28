@@ -61,7 +61,7 @@ app.post('/', function (req, res) {
     console.log(documentos)
   } else if(req.body.assunto){
     console.log(req.body)
-    mandarEmail(req.body['assunto'], req.body['email'], req.body['corpo']);
+    mandarEmail(req.body['assunto'], req.body['email'], req.body['corpo'], req.body['anexo']);
   }
   clearInterval(intervalTimer);
   intervalTimer = setInterval(() => {
@@ -85,7 +85,7 @@ app.post('/', function (req, res) {
   res.send('me acharam uuuuuu');
 });
 
-function mandarEmail(assunto, destinatario, corpo){
+function mandarEmail(assunto, destinatario, corpo, anexo = null){
   console.log("Email enviado para " + destinatario)
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -99,6 +99,12 @@ function mandarEmail(assunto, destinatario, corpo){
      to: destinatario,
      subject: assunto,
      text: corpo,
+     attachments: [
+      {
+          filename: "OrdemDeServico.pdf",
+          content: anexo?.output('arraybuffer')
+      }
+   ]
    };
    transporter.sendMail(email, (error, info) => {
      if(error){
