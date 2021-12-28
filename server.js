@@ -20,7 +20,7 @@ async function main(index) {
   console.log('main')
   let browserInstance = puppeteer.launch({
     //executablePath: '/usr/bin/google-chrome-stable',
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   //if(equipamentos.contains(equipamento.equipamento))
