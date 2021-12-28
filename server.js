@@ -82,7 +82,7 @@ app.post('/', function (req, res) {
 //     }
 //   }, 24 * 60 * 60 * 1000);
   const pageScraper = require('./pageScrapper');  
-  pageScraper.salvarApontamentoUso({cliente: {nomeFantasia: 'Teste Heroku'}, uid: 'mrXK8eovFJYfVwdyybozR5N44b02', modelo: 'Teste Heroku', equipamento: 'Teste Heroku', tipoEquipamento: {tipoEquipamento: 'Teste Heroku'}}, 10, '28/12/2021')
+  pageScraper.salvarApontamentoUso({cliente: {nomeFantasia: 'Teste Heroku'}, uid: 'mrXK8eovFJYfVwdyybozR5N44b02', modelo: 'Teste Heroku', equipamento: 'Teste Heroku', tipoEquipamento: {tipoEquipamento: 'Teste Heroku'}, id: 'Teste Heroku'}, 10, '28/12/2021')
   res.send('me acharam uuuuuu');
 });
 
