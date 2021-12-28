@@ -1,23 +1,9 @@
-const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, getDocs, addDoc, setDoc, doc } = require('firebase/firestore/lite');
-const server = require('./server');
-// Follow this pattern to import other Firebase services
-// import { } from 'firebase/<service>';
+import Database from 'firebase-firestore-lite';
 
-// TODO: Replace the following with your app's Firebase project configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyBJupSNTmCtRSlH9kQbOZwC1zXsfTC0YBI',
-  authDomain: 'svg-angular.firebaseapp.com',
-  databaseURL: 'https://svg-angular-default-rtdb.firebaseio.com',
-  projectId: 'svg-angular',
-  storageBucket: 'svg-angular.appspot.com',
-  messagingSenderId: '402634435212',
-  appId: '1:402634435212:web:f97eb51809195d654869a9',
-  measurementId: 'G-TD2M0NTKC1',
-};
+// All you need is the projectId. It can be found on the firebase console and in the firebase config.
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = new Database({ projectId: 'sandbox' });
+import { main } from './server';
 const scraperObject = {
   urlHome: 'http://www16.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
@@ -123,7 +109,7 @@ const scraperObject = {
       await page.waitForSelector('.trLink');
     } catch (err) {
       browser.close();
-      server.main(index);
+      main(index);
     }
     equipamentosNomes = await page.evaluate(() => {
       let equipamentosArr = [];
@@ -179,4 +165,4 @@ const scraperObject = {
 };
 
 
-module.exports = scraperObject;
+export default scraperObject;
