@@ -141,41 +141,42 @@ const scraperObject = {
     );
     return ''
   },
+
+  async salvarApontamentoUso(equipamento, valor, dataHoje){
+    // Get a list of cities from your database
+  
+    // TODO: Replace the following with your app's Firebase project configuration
+    try {
+      console.log(equipamento.uid + ' uid')
+      console.log(valor +' valor')
+      apontamentoObj = {
+        cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
+        dataLeitura: dataHoje,
+        equipamento: {
+          cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
+          uid: equipamento.uid,
+          equipamento: equipamento.equipamento,
+          id: equipamento.id,
+          modelo: equipamento?.modelo,
+          tipoEquipamento: JSON.parse(JSON.stringify(equipamento?.tipoEquipamento)),
+        },
+        observacoes: '',
+        uid: equipamento.uid,
+        unidadeMedida: 'HORAS',
+        valorReal: valor,
+        geradoPor: 'Automaticamente'
+      }
+      console.log(apontamentoObj.uid)
+      const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
+      console.log('Apontamento written with ID:' + docRefApontamento.id);
+      equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
+      await setDoc(doc(db, "equipamentos", equipamento.id), equipamento);
+      console.log(equipamento.id + ' equipamento id');
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
+  }
 };
 
-async function salvarApontamentoUso(equipamento, valor, dataHoje) {
-  // Get a list of cities from your database
-
-  // TODO: Replace the following with your app's Firebase project configuration
-  try {
-    console.log(equipamento.uid + ' uid')
-    console.log(valor +' valor')
-    apontamentoObj = {
-      cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-      dataLeitura: dataHoje,
-      equipamento: {
-        cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-        uid: equipamento.uid,
-        equipamento: equipamento.equipamento,
-        id: equipamento.id,
-        modelo: equipamento?.modelo,
-        tipoEquipamento: JSON.parse(JSON.stringify(equipamento?.tipoEquipamento)),
-      },
-      observacoes: '',
-      uid: equipamento.uid,
-      unidadeMedida: 'HORAS',
-      valorReal: valor,
-      geradoPor: 'Automaticamente'
-    }
-    console.log(apontamentoObj.uid)
-    const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
-    console.log('Apontamento written with ID:' + docRefApontamento.id);
-    equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
-    await setDoc(doc(db, "equipamentos", equipamento.id), equipamento);
-    console.log(equipamento.id + ' equipamento id');
-  } catch (e) {
-    console.error('Error adding document: ', e);
-  }
-}
 
 module.exports = scraperObject;
