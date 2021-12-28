@@ -114,11 +114,6 @@ app.get('/', function (req, res) {
 
 module.exports.main = main;
 
-app.listen(443, () => {
-  console.log('Ta aberto no 443')
+app.listen(8080, () => {
+  console.log('Ta aberto no 8080')
 });
-
-app.listen(80, () => {
-  console.log('Ta aberto na 80')
-});
-
