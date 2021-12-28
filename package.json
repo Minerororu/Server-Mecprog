@@ -4,9 +4,10 @@
   },
   "dependencies": {
     "chromium": "^3.0.2",
-    "cors": "^2.8.5",
     "express": "^4.17.1",
-
-    "request": "^2.88.2"
+    "firebase": "^9.0.2",
+    "firebase-admin": "^9.11.1",
+    "puppeteer": "^10.4.0",
+    "puppeteer-core": "^10.4.0"
   }
 }
