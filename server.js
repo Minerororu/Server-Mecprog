@@ -62,7 +62,7 @@ app.post('/', function (req, res) {
   clearInterval(intervalTimer);
   intervalTimer = setInterval(() => {
     mapBody();
-  }, 24 * 60 * 60 * 1000);
+  }, 60 * 1000);
   
   res.send('me acharam uuuuuu');
 });
