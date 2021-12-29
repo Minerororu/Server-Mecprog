@@ -1,5 +1,5 @@
 const server = require('./server');
-
+const axios = require('axios')
 const scraperObject = {
   urlHome: 'http://www16.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
