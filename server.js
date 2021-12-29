@@ -38,8 +38,6 @@ async function main(index) {
   });
   //if(equipamentos.contains(equipamento.equipamento))
   // Pass the browser instance to the scraper controller
-  console.log(equipamentos)
-  console.log(index)
   await scraperController(browserInstance, equipamentos[index], index);
 }
 
@@ -55,7 +53,6 @@ app.post('/', function (req, res) {
   const mapBody = async () => {
     index = 0
     for(index; index < body.length; index++){
-      console.log('entrou no for')
       element = body[index]
       if (!equipamentosNomes.includes(element.equipamento + element.cliente.nomeFantasia)) {
         equipamentos.push(element);
@@ -67,7 +64,6 @@ app.post('/', function (req, res) {
   mapBody(); 
   clearInterval(intervalTimer);
   intervalTimer = setInterval(() => {
-    console.log('passou minuto')
     mapBody();
   }, 24 * 60 * 60 * 1000);
   
