@@ -63,6 +63,7 @@ app.post('/', function (req, res) {
   mapBody(); 
   clearInterval(intervalTimer);
   intervalTimer = setInterval(() => {
+    console.log('passou minuto')
     mapBody();
   }, 4 * 60 * 1000);
   
