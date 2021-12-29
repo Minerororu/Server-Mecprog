@@ -37,6 +37,8 @@ async function main(index) {
   });
   //if(equipamentos.contains(equipamento.equipamento))
   // Pass the browser instance to the scraper controller
+  console.log(equipamentos)
+  console.log(index)
   await scraperController(browserInstance, equipamentos[index], index);
 }
 

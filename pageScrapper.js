@@ -109,7 +109,6 @@ const scraperObject = {
   },
 
   async scraperHomePage(browser, equipamento, index) {
-    console.log(equipamento)
     const context = await browser.createIncognitoBrowserContext();
     let page = await browser.newPage();
     console.log(`Navigating to ${this.urlHome}...`);
