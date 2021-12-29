@@ -81,7 +81,7 @@ const scraperObject = {
     horarioTotal = ((await totalHoras) + somaMinutos / 100) + equipamento?.valorUltimoApontamento;
 
     if (horarioTotal - equipamento?.valorUltimoApontamento != 0) {
-       await this.salvarApontamentoUso(equipamento, horarioTotal, hoje);
+       await salvarApontamentoUso(equipamento, horarioTotal, hoje);
     };
     browser.close()
   },
@@ -125,7 +125,7 @@ const scraperObject = {
     return ''
   },
 
-  async salvarApontamentoUso(equipamento, valor, dataHoje){
+   salvarApontamentoUso: async (equipamento, valor, dataHoje) =>{
     console.log(equipamento.uid + ' uid')
     console.log(valor +' valor')
     apontamentoObj = {
