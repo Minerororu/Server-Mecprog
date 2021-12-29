@@ -50,7 +50,8 @@ app.post('/', function (req, res) {
   };
 
   const mapBody = async () => {
-    for(let index = 0; index < req.body.length; index++){
+    let index = 0;
+    for(index; index < req.body.length; index++){
       element = req.body[index]
       if (!equipamentosNomes.includes(element.equipamento + element.cliente.nomeFantasia)) {
         equipamentos.push(element);
@@ -63,7 +64,7 @@ app.post('/', function (req, res) {
   clearInterval(intervalTimer);
   intervalTimer = setInterval(() => {
     mapBody();
-  }, 60 * 1000);
+  }, 4 * 60 * 1000);
   
   res.send('me acharam uuuuuu');
 });
