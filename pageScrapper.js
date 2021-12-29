@@ -101,11 +101,9 @@ const scraperObject = {
       }
       axios.post('https://server-mecprog-firebase.herokuapp.com', {colecao: 'apontamentos', obj: apontamentoObj})
         .catch(err => console.log(err.message))
-        .then(data => console.log(data));
       equipamento.valorUltimoApontamento = horarioTotal;
       axios.post('https://server-mecprog-firebase.herokuapp.com', {colecao:'equipamentos', obj: equipamento})
         .catch(err => console.log(err.message))
-        .then(data => console.log(data));
     };
     browser.close()
   },
