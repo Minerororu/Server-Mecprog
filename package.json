@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "chromium": "^3.0.2",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "puppeteer": "^10.4.0",
     "puppeteer-core": "^10.4.0"

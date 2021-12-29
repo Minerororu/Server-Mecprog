@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-
 let request = require('request-promise');
 const cookieJar = request.jar();
 request = request.defaults({ jar: cookieJar });
