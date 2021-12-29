@@ -5,6 +5,7 @@ const cookieJar = request.jar();
 request = request.defaults({ jar: cookieJar });
 const scraperController = require('./pageController');
 const puppeteer = require('puppeteer');
+const { default: axios } = require('axios');
 app.use(express.json());
 const equipamentos = [];
 const equipamentosNomes = [];
@@ -68,7 +69,7 @@ app.post('/', function (req, res) {
   intervalTimer = setInterval(() => {
     console.log('passou minuto')
     mapBody();
-  }, 4 * 60 * 1000);
+  }, 24 * 60 * 60 * 1000);
   
   res.send('me acharam uuuuuu');
 });
@@ -76,6 +77,10 @@ app.post('/', function (req, res) {
 app.get('/', function (req, res) {
   res.send('teste');
 });
+
+intervalTimer = setInterval(() => {
+  axios.get('http://pudim.com.br')
+}, 25 * 60 * 1000);
 
 module.exports.main = main;
 
