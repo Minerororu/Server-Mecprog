@@ -54,12 +54,13 @@ app.post('/', function (req, res) {
   const mapBody = async () => {
     index = 0
     for(index; index < body.length; index++){
+      console.log('entrou no for')
       element = body[index]
       if (!equipamentosNomes.includes(element.equipamento + element.cliente.nomeFantasia)) {
         equipamentos.push(element);
         equipamentosNomes.push(element.equipamento + element.cliente.nomeFantasia);
-        await callMain(index);
       }
+      await callMain(index);
     }
   };
   mapBody(); 
