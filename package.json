@@ -3,11 +3,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "chromium": "^3.0.2",
     "express": "^4.17.1",
-    "firebase-firestore-lite": "^1.0.3",
     "puppeteer": "^10.4.0",
-    "puppeteer-core": "^10.4.0",
-    "request-promise": "^4.2.6"
+    "puppeteer-core": "^10.4.0"
   }
 }

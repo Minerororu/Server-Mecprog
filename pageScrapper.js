@@ -1,9 +1,6 @@
-import Database from 'firebase-firestore-lite';
+const server = require('./server');
 
-// All you need is the projectId. It can be found on the firebase console and in the firebase config.
 
-const db = new Database({ projectId: 'sandbox' });
-import { main } from './server';
 const scraperObject = {
   urlHome: 'http://www16.itrack.com.br/mecprog/controlemonitoramento',
   equipamentos: [],
@@ -109,7 +106,7 @@ const scraperObject = {
       await page.waitForSelector('.trLink');
     } catch (err) {
       browser.close();
-      main(index);
+      server.main(index);
     }
     equipamentosNomes = await page.evaluate(() => {
       let equipamentosArr = [];
@@ -129,40 +126,34 @@ const scraperObject = {
   },
 
   async salvarApontamentoUso(equipamento, valor, dataHoje){
-    // Get a list of cities from your database
-  
-    // TODO: Replace the following with your app's Firebase project configuration
-    try {
-      console.log(equipamento.uid + ' uid')
-      console.log(valor +' valor')
-      apontamentoObj = {
+    console.log(equipamento.uid + ' uid')
+    console.log(valor +' valor')
+    apontamentoObj = {
+      cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
+      dataLeitura: dataHoje,
+      equipamento: {
         cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-        dataLeitura: dataHoje,
-        equipamento: {
-          cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-          uid: equipamento.uid,
-          equipamento: equipamento.equipamento,
-          id: equipamento.id,
-          modelo: equipamento?.modelo,
-          tipoEquipamento: JSON.parse(JSON.stringify(equipamento?.tipoEquipamento)),
-        },
-        observacoes: '',
         uid: equipamento.uid,
-        unidadeMedida: 'HORAS',
-        valorReal: valor,
-        geradoPor: 'Automaticamente'
-      }
-      console.log(apontamentoObj.uid)
-      const docRefApontamento = await addDoc(collection(db, 'apontamentos'), apontamentoObj);
-      console.log('Apontamento written with ID:' + docRefApontamento.id);
-      equipamento.valorUltimoApontamento = apontamentoObj.valorReal;
-      await setDoc(doc(db, "equipamentos", equipamento.id), equipamento);
-      console.log(equipamento.id + ' equipamento id');
-    } catch (e) {
-      console.error('Error adding document: ', e);
+        equipamento: equipamento.equipamento,
+        id: equipamento.id,
+        modelo: equipamento?.modelo,
+        tipoEquipamento: JSON.parse(JSON.stringify(equipamento?.tipoEquipamento)),
+      },
+      observacoes: '',
+      uid: equipamento.uid,
+      unidadeMedida: 'HORAS',
+      valorReal: valor,
+      geradoPor: 'Automaticamente'
     }
+    axios.post('https://server-mecprog-firebase.herokuapp.com', ['apontamentos',apontamentoObj])
+      .catch(err => console.log(err.message))
+      .then(data => console.log(data));
+    equipamento.valorUltimoApontamento = req.body.valorReal;
+    axios.post('https://server-mecprog-firebase.herokuapp.com', ['equipamentos',apontamentoObj])
+      .catch(err => console.log(err.message))
+      .then(data => console.log(data));
   }
 };
 
 
-export default scraperObject;
+module.exports = scraperObject;
