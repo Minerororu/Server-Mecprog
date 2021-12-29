@@ -81,7 +81,7 @@ const scraperObject = {
     horarioTotal = ((await totalHoras) + somaMinutos / 100) + equipamento?.valorUltimoApontamento;
 
     if (horarioTotal - equipamento?.valorUltimoApontamento != 0) {
-       await salvarApontamentoUso(equipamento, horarioTotal, hoje);
+       await this.salvarApontamentoUso(equipamento, horarioTotal, hoje);
     };
     browser.close()
   },
