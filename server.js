@@ -43,16 +43,18 @@ async function main(index) {
 }
 
 let intervalTimer = '';
+let body = undefined
 app.post('/', function (req, res) {
   const callMain = async (i) => {
     console.log(equipamentos.length + ' lentgh')
     await main(i);
   };
-
+  body = req.body
+  let index = 0;
   const mapBody = async () => {
-    let index = 0;
-    for(index; index < req.body.length; index++){
-      element = req.body[index]
+    index = 0
+    for(index; index < body.length; index++){
+      element = body[index]
       if (!equipamentosNomes.includes(element.equipamento + element.cliente.nomeFantasia)) {
         equipamentos.push(element);
         equipamentosNomes.push(element.equipamento + element.cliente.nomeFantasia);
