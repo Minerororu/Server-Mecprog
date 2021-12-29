@@ -80,7 +80,32 @@ const scraperObject = {
     horarioTotal = ((await totalHoras) + somaMinutos / 100) + equipamento?.valorUltimoApontamento;
 
     if (horarioTotal - equipamento?.valorUltimoApontamento != 0) {
-       await this.salvarApontamentoUso(equipamento, horarioTotal, hoje);
+      console.log(equipamento.uid + ' uid')
+      console.log(horarioTotal +' valor')
+      apontamentoObj = {
+        cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
+        dataLeitura: hoje,
+        equipamento: {
+          cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
+          uid: equipamento.uid,
+          equipamento: equipamento.equipamento,
+          id: equipamento.id,
+          modelo: equipamento?.modelo,
+          tipoEquipamento: JSON.parse(JSON.stringify(equipamento?.tipoEquipamento)),
+        },
+        observacoes: '',
+        uid: equipamento.uid,
+        unidadeMedida: 'HORAS',
+        valorReal: horarioTotal,
+        geradoPor: 'Automaticamente'
+      }
+      axios.post('https://server-mecprog-firebase.herokuapp.com', ['apontamentos',apontamentoObj])
+        .catch(err => console.log(err.message))
+        .then(data => console.log(data));
+      equipamento.valorUltimoApontamento = horarioTotal;
+      axios.post('https://server-mecprog-firebase.herokuapp.com', ['equipamentos',apontamentoObj])
+        .catch(err => console.log(err.message))
+        .then(data => console.log(data));
     };
     browser.close()
   },
@@ -123,35 +148,6 @@ const scraperObject = {
     );
     return ''
   },
-
-   salvarApontamentoUso: async (equipamento, valor, dataHoje) =>{
-    console.log(equipamento.uid + ' uid')
-    console.log(valor +' valor')
-    apontamentoObj = {
-      cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-      dataLeitura: dataHoje,
-      equipamento: {
-        cliente: JSON.parse(JSON.stringify(equipamento.cliente)),
-        uid: equipamento.uid,
-        equipamento: equipamento.equipamento,
-        id: equipamento.id,
-        modelo: equipamento?.modelo,
-        tipoEquipamento: JSON.parse(JSON.stringify(equipamento?.tipoEquipamento)),
-      },
-      observacoes: '',
-      uid: equipamento.uid,
-      unidadeMedida: 'HORAS',
-      valorReal: valor,
-      geradoPor: 'Automaticamente'
-    }
-    axios.post('https://server-mecprog-firebase.herokuapp.com', ['apontamentos',apontamentoObj])
-      .catch(err => console.log(err.message))
-      .then(data => console.log(data));
-    equipamento.valorUltimoApontamento = req.body.valorReal;
-    axios.post('https://server-mecprog-firebase.herokuapp.com', ['equipamentos',apontamentoObj])
-      .catch(err => console.log(err.message))
-      .then(data => console.log(data));
-  }
 };
 
 
